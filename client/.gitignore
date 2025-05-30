@@ -1,0 +1,5 @@
+# Ignore client-specific things
+node_modules/
+.env
+build/
+.next/
