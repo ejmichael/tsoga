@@ -31,4 +31,14 @@ const sendEmailWithPDF = async (to, subject, text, pdfBuffer, pdfFileName) => {
     return transporter.sendMail(mailOptions)
 };
 
-module.exports = { sendEmailWithPDF };
+const sendLeadInfo = async (to, subject, text) => {
+    const mailOptions = {
+        from: 'ethan@easy-outreach.com',
+        to, 
+        subject,
+        text,
+    };
+    return transporter.sendMail(mailOptions)
+};
+
+module.exports = { sendEmailWithPDF, sendLeadInfo };

@@ -8,9 +8,12 @@ const leadSchema = mongoose.Schema({
     lastName: {
         type: String
     },
-    emailAddress: {
+    phoneNumber: {
         type: String,
         required: true
+    },
+    emailAddress: {
+        type: String,
     },
     insuranceType: {
         type: String,

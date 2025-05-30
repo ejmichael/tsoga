@@ -5,73 +5,73 @@ const LeadForm = () => {
 
     const [selectedInsuranceType, setSelectedInsuranceType] = useState(null)
     const [subTypes, setSubTypes] = useState([]);
-    const domain = window.location.href.includes('localhost') ? "http://localhost:5000" : "https://taptosee-backend.onrender.com";
+    const domain = window.location.href.includes('localhost') ? "http://localhost:5000" : "https://tsoga-backend.onrender.com";
 
     const subTypeOptions = {
-        'credit': [
-          'Trade Credit',
-          'Credit Insurance'
-        ],
-        'guarantees': [
-          'Fuel',
-          'Performance',
-          'Construction',
-          'Mining Rehabilitation'
-        ],
-        'aviation': [
-          'Hull Insurance',
-          'Passenger Liability',
-          'Personal Accident',
-          'Public Liability'
-        ],
-        'marine': [
-          'Marine Cargo',
-          'Marine Hull / Watercraft',
-          'Stock Throughput',
-          'Watercraft'
-        ],
-        'accident-health': [
-          'Group Personal Accident',
-          'Business Travel',
-          'Leisure Travel'
-        ],
-        'engineering-risks': [
-          'Specialised Electronic Equipment',
-          'Contractors All Risks',
-          'Contractors Plant and Equipment/Plant',
-          'Machinery Breakdown'
-        ],
-        'specialist-liability': [
-          'Broadform Liability',
-          'Commercial Crime',
-          'Cyber Liability',
-          'Directors and Officers Liability',
-          'Employment Practices Liability',
-          'Environmental Impairment Liability',
-          'Professional Indemnity',
-          'Medical Malpractice',
-          'Kidnap and Ransom/Extortion'
-        ],
-        'commercial': [
-          'Accidental Damage',
-          'Buildings Combined',
-          'Business All Risks',
-          'Business Interruption',
-          'Electronic Equipment',
-          'Fidelity Guarantee',
-          'Fire',
-          'Glass',
-          'Machinery Breakdown',
-          'Money',
-          'Office Contents',
-          'Theft',
-          'Motor'
-        ]
+        credit: {
+          trade_credit: 'Trade Credit',
+          credit_insurance: 'Credit Insurance'
+        },
+        guarantees: {
+          fuel: 'Fuel',
+          performance: 'Performance',
+          construction: 'Construction',
+          mining_rehabilitation: 'Mining Rehabilitation'
+        },
+        aviation: {
+          hull_insurance: 'Hull Insurance',
+          passenger_liability: 'Passenger Liability',
+          personal_accident: 'Personal Accident',
+          public_liability: 'Public Liability'
+        },
+        marine: {
+          marine_cargo: 'Marine Cargo',
+          marine_hull: 'Marine Hull / Watercraft',
+          stock_throughput: 'Stock Throughput',
+          watercraft: 'Watercraft'
+        },
+        'accident-health': {
+          group_personal_accident: 'Group Personal Accident',
+          business_travel: 'Business Travel',
+          leisure_travel: 'Leisure Travel'
+        },
+        'engineering-risks': {
+          specialised_electronic_equipment: 'Specialised Electronic Equipment',
+          contractors_all_risks: 'Contractors All Risks',
+          contractors_plant: 'Contractors Plant and Equipment/Plant',
+          machinery_breakdown: 'Machinery Breakdown'
+        },
+        'specialist-liability': {
+          broadform_liability: 'Broadform Liability',
+          commercial_crime: 'Commercial Crime',
+          cyber_liability: 'Cyber Liability',
+          directors_officers: 'Directors and Officers Liability',
+          employment_practices: 'Employment Practices Liability',
+          environmental_impairment: 'Environmental Impairment Liability',
+          professional_indemnity: 'Professional Indemnity',
+          medical_malpractice: 'Medical Malpractice',
+          kidnap_ransom: 'Kidnap and Ransom/Extortion'
+        },
+        commercial: {
+          accidental_damage: 'Accidental Damage',
+          buildings_combined: 'Buildings Combined',
+          business_all_risks: 'Business All Risks',
+          business_interruption: 'Business Interruption',
+          electronic_equipment: 'Electronic Equipment',
+          fidelity_guarantee: 'Fidelity Guarantee',
+          fire: 'Fire',
+          glass: 'Glass',
+          machinery_breakdown: 'Machinery Breakdown',
+          money: 'Money',
+          office_contents: 'Office Contents',
+          theft: 'Theft',
+          motor: 'Motor'
+        }
       };
-
+      
       const [formData, setFormData] = useState({
         firstName: '',
-        surname: '',
+        lastName: '',
         emailAddress: '',
         phoneNumber: '',
         location: '',
@@ -85,7 +85,7 @@ const LeadForm = () => {
         e.preventDefault()
         if(
             formData.firstName=== '' ||
-            formData.surname=== '' ||
+            formData.lastName=== '' ||
             formData.emailAddress=== '' ||
             formData.phoneNumber=== '' ||
             formData.location=== '' ||
@@ -97,7 +97,7 @@ const LeadForm = () => {
 
         try {
             const res = await axios.post(`${domain}/api/lead/${formData.insuranceType}`, formData)
-            if(res.data.message === 'Lead Submitted'){
+            if(res.data.message === 'Lead captured and PDF emailed successfully.'){
                 setLeadSubmitted(true)
             }
         } catch (error) {
@@ -111,7 +111,7 @@ const LeadForm = () => {
             if(selectedInsuranceType && subTypeOptions[selectedInsuranceType]){
                 setSubTypes(subTypeOptions[selectedInsuranceType])
             } else {
-                setSubTypes([]);
+                setSubTypes({});
             }
         }
 
@@ -154,9 +154,9 @@ console.log(formData);
                             <label>Surname</label>
                             <input
                                 type='text'
-                                name="surname"
+                                name="lastName"
                                 onChange={handleFormChange}
-                                value={formData.surname}
+                                value={formData.lastName}
                                 placeholder='Enter your surname here'
                                 className='h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs'    
                             />
@@ -209,7 +209,7 @@ console.log(formData);
                     <p className='text-lg font-medium'>Insurance Info</p>
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                         <div className='grid grid-cols-1 gap-2'>
-                            <label>Insurace Type</label>
+                            <label>Insurance Type</label>
                             <select 
                                 onChange={(e) => {
                                     const value = e.target.value;
@@ -229,17 +229,16 @@ console.log(formData);
                             </select>
                         </div>
                         <div className='grid grid-cols-1 gap-2'>
-                            <label>Insurace Sub Type</label>
+                            <label>Insurance Sub Type</label>
                             <select onChange={(e) =>
                                 setFormData((prev) => ({ ...prev, insuranceSubType: e.target.value }))
                                 }
                                 value={formData.insuranceSubType}
                                 className=' rounded-md border h-9 px-2 py-1 text-base shadow-xs'>
                             <option value="">Select Sub Type</option>
-                                {subTypes.map((sub, index) => (
-                                    <option key={index} value={sub}>{sub}</option>
+                                {Object.entries(subTypes).map(([key, value]) => (
+                                <option key={key} value={key}>{value}</option>
                                 ))}
-                                
                             </select>
                         </div>
                         

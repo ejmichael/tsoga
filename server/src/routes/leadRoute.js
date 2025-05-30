@@ -4,6 +4,6 @@ const { addProductInfo } = require('../controllers/productInfoController');
 
 const leadRoute = express.Router();
 
-leadRoute.post('/:type/:subType', leadSubmitForm) 
+leadRoute.post('/:type/', leadSubmitForm) 
 
 module.exports = leadRoute
