@@ -8,7 +8,7 @@ const pdfProductInfoModel = require('../models/pdfProductInfoModel');
 const leadSubmitForm = async (req, res) => {
   try {
     const { 
-      category,
+      type      
      } = req.params;
      
      const {
@@ -21,7 +21,7 @@ const leadSubmitForm = async (req, res) => {
      } = req.body;
 
     const productInfo = await pdfProductInfoModel.findOne({ 
-      category: category,
+      category: type,
       name: "Glass Cover",
     });
 

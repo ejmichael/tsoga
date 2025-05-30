@@ -33,8 +33,8 @@ const Navbar = () => {
         </div>
       </div>
 
-      <div data-column="middle">
-        <div data-items="">
+      <div data-column="middle" c>
+        <div data-items="" className="hidden md:block">
           <nav
             id="header-menu-1"
             className="header-menu-1 menu-container "
@@ -125,7 +125,7 @@ const Navbar = () => {
       </div>
 
       <div data-column="end" data-placements="1">
-        <div data-items="primary">
+        <div data-items="primary" className="hidden md:block">
           <div className="ct-header-socials" data-id="socials">
             <div
               className="ct-social-box flex justify-end gap-4"

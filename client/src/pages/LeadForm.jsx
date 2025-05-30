@@ -96,7 +96,7 @@ const LeadForm = () => {
         }
 
         try {
-            const res = await axios.post(`${domain}/api/lead/${formData.insuranceType}/${formData.insuranceSubType}`, formData)
+            const res = await axios.post(`${domain}/api/lead/${formData.insuranceType}`, formData)
             if(res.data.message === 'Lead Submitted'){
                 setLeadSubmitted(true)
             }
@@ -118,10 +118,18 @@ const LeadForm = () => {
         handleInsuranceTypeSelection()
     }, [selectedInsuranceType])
 
+    const handleFormChange = (e) => {
+        setFormData((prevState) => ({
+            ...prevState,
+            [e.target.name]: e.target.value,
+        }))
+    }
+
+console.log(formData);
 
   return (
     <div className='min-h-screen bg-[#F4BA00] py-8'>
-        <div className='max-w-[75%] border mx-auto p-8 bg-white rounded-md'>
+        <div className='md:max-w-[75%] max-w-[85%] border mx-auto p-8 bg-white rounded-md'>
             <div className='mb-'>
                 <p className='text-3xl text-[#0C0C0C] font-bold pb-2'>Join Tsoga Insure</p>
                 <p className='text-sm text-[#753E31] pb-2'>Fill in your details below and we'll send you more information</p>
@@ -136,6 +144,8 @@ const LeadForm = () => {
                             <input
                                 type='text'
                                 name="firstName"
+                                onChange={handleFormChange}
+                                value={formData.firstName}
                                 placeholder='Enter your first name here'
                                 className='h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs'    
                             />
@@ -145,6 +155,8 @@ const LeadForm = () => {
                             <input
                                 type='text'
                                 name="surname"
+                                onChange={handleFormChange}
+                                value={formData.surname}
                                 placeholder='Enter your surname here'
                                 className='h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs'    
                             />
@@ -154,6 +166,8 @@ const LeadForm = () => {
                             <input
                                 type='text'
                                 name="phoneNumber"
+                                onChange={handleFormChange}
+                                value={formData.phoneNumber}
                                 placeholder='Enter your phone number here'
                                 className='h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs'    
                             />
@@ -163,6 +177,8 @@ const LeadForm = () => {
                             <input
                                 type='email'
                                 name="emailAddress"
+                                onChange={handleFormChange}
+                                value={formData.emailAddress}
                                 placeholder='Enter your email address here'
                                 className='h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs'    
                             />
@@ -172,11 +188,13 @@ const LeadForm = () => {
                             <input
                                 type='text'
                                 name="location"
+                                onChange={handleFormChange}
+                                value={formData.location}
                                 placeholder='Province'
                                 className='h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs'    
                             />
                         </div>
-                        <div className='grid grid-cols-1 gap-2'>
+                        {/* <div className='grid grid-cols-1 gap-2'>
                             <label>Area</label>
                             <input
                                 type='text'
@@ -184,7 +202,7 @@ const LeadForm = () => {
                                 placeholder='Province'
                                 className='h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs'    
                             />
-                        </div>
+                        </div> */}
                     </div>
                 </div>
                 <div className='space-y-4 pt-6'>
@@ -192,7 +210,13 @@ const LeadForm = () => {
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                         <div className='grid grid-cols-1 gap-2'>
                             <label>Insurace Type</label>
-                            <select onChange={(e) => setSelectedInsuranceType(e.target.value)} className=' text-base rounded-md border h-9 px-2 py-1 text-base shadow-xs'>
+                            <select 
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    setSelectedInsuranceType(value);
+                                    setFormData((prev) => ({ ...prev, insuranceType: value, insuranceSubType: '' }));
+                                  }}
+                                className=' text-base rounded-md border h-9 px-2 py-1 text-base shadow-xs'>
                                 <option value="">Insurance Type</option>
                                 <option value="credit">Credit Insurance</option>
                                 <option value="guarantees">Guarantees</option>
@@ -206,7 +230,11 @@ const LeadForm = () => {
                         </div>
                         <div className='grid grid-cols-1 gap-2'>
                             <label>Insurace Sub Type</label>
-                            <select className=' rounded-md border h-9 px-2 py-1 text-base shadow-xs'>
+                            <select onChange={(e) =>
+                                setFormData((prev) => ({ ...prev, insuranceSubType: e.target.value }))
+                                }
+                                value={formData.insuranceSubType}
+                                className=' rounded-md border h-9 px-2 py-1 text-base shadow-xs'>
                             <option value="">Select Sub Type</option>
                                 {subTypes.map((sub, index) => (
                                     <option key={index} value={sub}>{sub}</option>
@@ -227,7 +255,7 @@ const LeadForm = () => {
             </form>
             {leadSubmitted && (
                 <div>
-                    Thank you! Look out for our email.
+                    Thank you! Look out for our email!
                 </div>
             )}
         </div>
