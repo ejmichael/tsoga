@@ -25,6 +25,9 @@ const leadSchema = mongoose.Schema({
     location: {
         type: String
     },
+    note: {
+        type: String
+    }
 }, {
     timestramps: true
 })

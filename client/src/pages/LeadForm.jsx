@@ -76,7 +76,8 @@ const LeadForm = () => {
         phoneNumber: '',
         location: '',
         insuranceType: '',
-        insuranceSubType: ''
+        insuranceSubType: '',
+        note: ''
       })
 
       const [leadSubmitted, setLeadSubmitted] = useState(false)
@@ -99,6 +100,16 @@ const LeadForm = () => {
             const res = await axios.post(`${domain}/api/lead/${formData.insuranceType}`, formData)
             if(res.data.message === 'Lead captured and PDF emailed successfully.'){
                 setLeadSubmitted(true)
+                setFormData({
+                    firstName: '',
+                    lastName: '',
+                    emailAddress: '',
+                    phoneNumber: '',
+                    location: '',
+                    insuranceType: '',
+                    insuranceSubType: '',
+                    note: ''
+                  })
             }
         } catch (error) {
             console.log(error.message);   
@@ -237,11 +248,26 @@ console.log(formData);
                                 className=' rounded-md border h-9 px-2 py-1 text-base shadow-xs'>
                             <option value="">Select Sub Type</option>
                                 {Object.entries(subTypes).map(([key, value]) => (
-                                <option key={key} value={key}>{value}</option>
+                                <option key={key} value={value}>{value}</option>
                                 ))}
                             </select>
                         </div>
                         
+                    </div>
+                </div>
+                <div className='space-y-4 pt-6'>
+                    <p className='text-lg font-medium'>Tell us more</p>
+                    <div className='grid grid-cols-1 gap-6'>
+                        <div className='grid grid-cols-1 gap-2'>
+                            <textarea
+                                type='text'
+                                name="note"
+                                onChange={handleFormChange}
+                                value={formData.note}
+                                placeholder='Enter any additional information here'
+                                className='h-24 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs'    
+                            />
+                        </div>
                     </div>
                 </div>
                 <div className="h-px bg-[#F4BA00]/30 mt-6" />

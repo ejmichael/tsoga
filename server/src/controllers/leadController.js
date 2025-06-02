@@ -18,7 +18,8 @@ const leadSubmitForm = async (req, res) => {
       phoneNumber,
       location,
       insuranceType,
-      insuranceSubType
+      insuranceSubType,
+      note
      } = req.body;
 
      console.log({
@@ -28,38 +29,40 @@ const leadSubmitForm = async (req, res) => {
       phoneNumber,
       location,
       insuranceType,
-      insuranceSubType})
+      insuranceSubType, 
+      note
+    })
 
-    // const productInfo = await pdfProductInfoModel.findOne({ 
-    //   category: type,
-    //   name: "Glass Cover",
-    // });
+    const productInfo = await pdfProductInfoModel.findOne({ 
+      category: type,
+      name: insuranceSubType,
+    });
 
-    // if (!productInfo) {
-    //   return res.status(404).json({ message: 'Product information not found.' });
-    // }
+    if (!productInfo) {
+      return res.status(404).json({ message: 'Product information not found.' });
+    }
 
     console.log('Form submitted to Backend');
 
-    // const pdfData = {
-    //   //form data
-    //   firstName,
-    //   lastName ,
-    //   emailAddress,
-    //   location,
-    //   insuranceType,
-    //   insuranceSubType,
+    const pdfData = {
+      //form data
+      firstName,
+      lastName ,
+      emailAddress,
+      location,
+      insuranceType,
+      insuranceSubType,
 
-    //   // Product info fields
-    //   description: productInfo.description,
-    //   coverDetails: productInfo.coverDetails,
-    //   whoIsItFor: productInfo.whoIsItFor,
-    //   policyHighlights: productInfo.policyHighlights,
-    //   exclusions: productInfo.exclusions,
-    //   claimsProcess: productInfo.claimsProcess,
-    //   excessInfo: productInfo.excessInfo,
-    //   periodOfCover: productInfo.periodOfCover
-    // };
+      // Product info fields
+      description: productInfo.description,
+      coverDetails: productInfo.coverDetails,
+      whoIsItFor: productInfo.whoIsItFor,
+      policyHighlights: productInfo.policyHighlights,
+      exclusions: productInfo.exclusions,
+      claimsProcess: productInfo.claimsProcess,
+      excessInfo: productInfo.excessInfo,
+      periodOfCover: productInfo.periodOfCover
+    };
 
     const newLead = new Lead({
       firstName,
@@ -69,6 +72,7 @@ const leadSubmitForm = async (req, res) => {
       location,
       insuranceType,
       insuranceSubType,
+      note
     });
     
     const savedLead = await newLead.save();
@@ -78,28 +82,28 @@ const leadSubmitForm = async (req, res) => {
         'ethanj.michael03@gmail.com',
         // 'info@tsogainsure.com',
         'New Website Lead',
-        `Hi Tsoga Team,\n\n New lead: \n Name:${firstName} ${lastName} \n Phone: ${phoneNumber} \n Email: ${emailAddress} \n Insurance Type: ${insuranceType} \n Insurance Sub-type: ${insuranceSubType}`
+        `Hi Tsoga Team,\n\n New lead: \n Name: ${firstName} ${lastName} \n Phone: ${phoneNumber} \n Email: ${emailAddress} \n Insurance Type: ${insuranceType} \n Insurance Sub-type: ${insuranceSubType} \n Note: ${note}`
       )
     }
 
 
-    // Generate the PDF
-    //const { pdfBuffer, filePath } = await generatePDF(pdfData, 'insurance-offer');
+   // Generate the PDF
+    const { pdfBuffer, filePath } = await generatePDF(pdfData, 'insurance-offer');
 
-    // // Send email with PDF attached
-    // await sendEmailWithPDF(
-    //   pdfData.emailAddress,
-    //   'Your Personalized Insurance Offer',
-    //   `Hi ${pdfData.firstName},\n\nPlease find your personalized insurance offer attached.`,
-    //   pdfBuffer,
-    //   'insurance-offer.pdf'
-    // );
+    // Send email with PDF attached
+    await sendEmailWithPDF(
+      pdfData.emailAddress,
+      'Your Personalized Insurance Offer',
+      `Hi ${pdfData.firstName},\n\nPlease find your personalized insurance offer attached.`,
+      pdfBuffer,
+      'insurance-offer.pdf'
+    );
 
-    await sendLeadInfo(
-      emailAddress,
-      `${firstName}, thanks for reaching out`,
-      `Hi ${firstName},\n\n We'll be in touch about your ${insuranceType},  ${insuranceSubType} quote. \n Thanks, \n\n Tsoga team.`
-    )
+    // await sendLeadInfo(
+    //   emailAddress,
+    //   `${firstName}, thanks for reaching out`,
+    //   `Hi ${firstName},\n\n We'll be in touch about your ${insuranceType},  ${insuranceSubType} quote. \n Thanks, \n\n Tsoga team.`
+    // )
 
     res.status(200).json({ message: 'Lead captured and PDF emailed successfully.' });
   } catch (error) {
