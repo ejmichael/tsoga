@@ -6,6 +6,7 @@ const LeadForm = () => {
     const [selectedInsuranceType, setSelectedInsuranceType] = useState(null)
     const [subTypes, setSubTypes] = useState([]);
     const domain = window.location.href.includes('localhost') ? "http://localhost:5000" : "https://tsoga-backend.onrender.com";
+    const [loading, setLoading] = useState(false)
 
     const subTypeOptions = {
         credit: {
@@ -13,10 +14,10 @@ const LeadForm = () => {
           credit_insurance: 'Credit Insurance'
         },
         guarantees: {
-          fuel: 'Fuel',
+          fuel: 'Fuel Guarantee',
           performance: 'Performance',
-          construction: 'Construction',
-          mining_rehabilitation: 'Mining Rehabilitation'
+          construction: 'Construction Guarantee',
+          mining_rehabilitation: 'Mining Rehabilitation Guarantee'
         },
         aviation: {
           hull_insurance: 'Hull Insurance',
@@ -83,7 +84,8 @@ const LeadForm = () => {
       const [leadSubmitted, setLeadSubmitted] = useState(false)
 
       const submitForm = async (e) => {
-        e.preventDefault()
+        e.preventDefault();
+        setLoading(true)
         if(
             formData.firstName=== '' ||
             formData.lastName=== '' ||
@@ -94,6 +96,7 @@ const LeadForm = () => {
             formData.insuranceSubType=== '' 
         ) {
             alert("Please complete all fields")
+            setLoading(false)
         }
 
         try {
@@ -110,9 +113,11 @@ const LeadForm = () => {
                     insuranceSubType: '',
                     note: ''
                   })
+                  setLoading(false)
             }
         } catch (error) {
-            console.log(error.message);   
+            console.log(error.message);
+            setLoading(false)   
         }
       }
       
@@ -136,7 +141,7 @@ const LeadForm = () => {
         }))
     }
 
-console.log(formData);
+//console.log(formData);
 
   return (
     <div className='min-h-screen bg-[#F4BA00] py-8'>
@@ -273,8 +278,8 @@ console.log(formData);
                 <div className="h-px bg-[#F4BA00]/30 mt-6" />
 
                 <div className='w-full pt-6 flex md:justify-end justify-center'>
-                    <button className='md:w-[30%] w-full text-white h-12 rounded-lg text-base gap-2  bg-[#753E31] hover:bg-[#753E31]/90 font-bold' onClick={submitForm}>
-                        Proceed
+                    <button disabled={loading} className={`md:w-[30%] w-full text-white h-12 rounded-lg text-base gap-2 bg-[#753E31] hover:bg-[#753E31]/90 font-bold`} onClick={submitForm}>
+                        {loading ? 'Submitting form...' : 'Proceed' }
                     </button>
                 </div>
             </form>
