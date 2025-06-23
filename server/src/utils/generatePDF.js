@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer'); // use full puppeteer
 const handlebars = require('handlebars');
 
 const generatePDF = async (data, templateName) => {
@@ -9,13 +9,18 @@ const generatePDF = async (data, templateName) => {
   const compiledTemplate = handlebars.compile(templateHtml);
   const html = compiledTemplate(data);
 
-  const browser = await puppeteer.launch();
+  // ✅ Launch Chromium with deployment-safe flags
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
+
   const page = await browser.newPage();
   await page.setContent(html, { waitUntil: 'networkidle0' });
 
   const downloadsDir = path.join(__dirname, '..', 'downloads');
 
-  // ✅ Ensure 'downloads' folder exists
+  // Ensure the 'downloads' folder exists
   if (!fs.existsSync(downloadsDir)) {
     fs.mkdirSync(downloadsDir);
   }
@@ -23,6 +28,7 @@ const generatePDF = async (data, templateName) => {
   const filePath = path.join(downloadsDir, `${Date.now()}-${templateName}.pdf`);
 
   const pdfBuffer = await page.pdf({ format: 'A4', path: filePath });
+
   await browser.close();
 
   return { pdfBuffer, filePath };
