@@ -10,6 +10,9 @@ const leadSubmitForm = async (req, res) => {
     const { 
       type      
      } = req.params;
+
+     console.log(type);
+     
      
      const {
       firstName,
