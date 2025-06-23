@@ -91,7 +91,7 @@ const leadSubmitForm = async (req, res) => {
 
 
    // Generate the PDF
-    const { pdfBuffer, filePath } = await generatePDF(pdfData, 'insurance-offer');
+    const { pdfBuffer } = await generatePDF(pdfData, 'insurance-offer');
 
     // Send email with PDF attached
     await sendEmailWithPDF(
