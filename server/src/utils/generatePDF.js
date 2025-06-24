@@ -10,11 +10,17 @@ const generatePDF = async (data, templateName) => {
   const compiledTemplate = handlebars.compile(templateHtml);
   const html = compiledTemplate(data);
 
+
   // Launch Chromium with Render-compatible flags
+  console.log("launching puppeteer");
+  
   const browser = await puppeteer.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
+
+  console.log("Puppeteer launched");
+  
 
   const page = await browser.newPage();
 
