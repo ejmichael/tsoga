@@ -11,16 +11,12 @@ const generatePDF = async (data, templateName) => {
   const compiledTemplate = handlebars.compile(templateHtml);
   const html = compiledTemplate(data);
 
-  console.log("Launching Puppeteer/Chromium");
-
   const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
-    executablePath: chromium.path, // ✅ Use .path not executablePath()
+    executablePath: chromium.path,
     headless: chromium.headless,
   });
-
-  console.log("Chromium launched");
 
   const page = await browser.newPage();
   await page.setContent(html, { waitUntil: 'networkidle0' });
