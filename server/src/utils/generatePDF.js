@@ -6,6 +6,8 @@ const handlebars = require('handlebars');
 const generatePDF = async (data, templateName) => {
   const { default: chromium } = await import('@sparticuz/chromium');
 
+  console.log('Chromium executable path:', chromium.path); // <== add this
+
   const templatePath = path.join(__dirname, '..', 'templates', `${templateName}.html`);
   const templateHtml = fs.readFileSync(templatePath, 'utf-8');
   const compiledTemplate = handlebars.compile(templateHtml);
