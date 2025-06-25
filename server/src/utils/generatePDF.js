@@ -18,7 +18,7 @@ const generatePDF = async (data, templateName) => {
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
     executablePath: isRender
-      ? await chromium.executablePath()
+      ?  chromium.executablePath()
       : undefined, // use local Chrome if not on Render
     headless: chromium.headless,
   });
