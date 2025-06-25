@@ -1,10 +1,13 @@
 const fs = require('fs');
 const path = require('path');
-const chromium = require('@sparticuz/chromium');
+// const chromium = require('@sparticuz/chromium');
 const puppeteer = require('puppeteer-core');
 const handlebars = require('handlebars');
 
 const generatePDF = async (data, templateName) => {
+
+  const chromium = await import('@sparticuz/chromium');
+
   const templatePath = path.join(__dirname, '..', 'templates', `${templateName}.html`);
   const templateHtml = fs.readFileSync(templatePath, 'utf-8');
   const compiledTemplate = handlebars.compile(templateHtml);
