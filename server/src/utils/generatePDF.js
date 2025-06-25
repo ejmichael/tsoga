@@ -4,7 +4,6 @@ const puppeteer = require('puppeteer-core');
 const handlebars = require('handlebars');
 
 const generatePDF = async (data, templateName) => {
-  // ✅ Use dynamic import and destructure .default
   const { default: chromium } = await import('@sparticuz/chromium');
 
   const templatePath = path.join(__dirname, '..', 'templates', `${templateName}.html`);
@@ -14,12 +13,10 @@ const generatePDF = async (data, templateName) => {
 
   console.log("Launching Puppeteer/Chromium");
 
-  const isRender = !!process.env.RENDER;
-
   const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
-    executablePath: isRender ? chromium.executablePath : undefined,
+    executablePath: chromium.path, // ✅ Use .path not executablePath()
     headless: chromium.headless,
   });
 
