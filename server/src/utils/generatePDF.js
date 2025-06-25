@@ -1,38 +1,37 @@
 const fs = require('fs');
 const path = require('path');
-const puppeteer = require('puppeteer');
+const chromium = require('@sparticuz/chromium');
+const puppeteer = require('puppeteer-core');
 const handlebars = require('handlebars');
 
 const generatePDF = async (data, templateName) => {
-  // Load and compile the HTML template with Handlebars
   const templatePath = path.join(__dirname, '..', 'templates', `${templateName}.html`);
   const templateHtml = fs.readFileSync(templatePath, 'utf-8');
   const compiledTemplate = handlebars.compile(templateHtml);
   const html = compiledTemplate(data);
 
+  console.log("Launching Puppeteer/Chromium");
 
-  // Launch Chromium with Render-compatible flags
-  console.log("launching puppeteer");
-  
+  const isRender = !!process.env.RENDER; // Render sets this environment variable automatically
+
   const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: isRender
+      ? await chromium.executablePath()
+      : undefined, // use local Chrome if not on Render
+    headless: chromium.headless,
   });
 
-  console.log("Puppeteer launched");
-  
+  console.log("Chromium launched");
 
   const page = await browser.newPage();
-
-  // Set the page content to the compiled HTML
   await page.setContent(html, { waitUntil: 'networkidle0' });
 
-  // Generate PDF as a buffer (without saving to disk)
   const pdfBuffer = await page.pdf({ format: 'A4' });
 
   await browser.close();
 
-  // Return only the PDF buffer now (no file path)
   return { pdfBuffer };
 };
 
