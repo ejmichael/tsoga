@@ -6,97 +6,93 @@ const generatePDF = (data) => {
     const doc = new PDFDocument({ size: 'A4', margin: 50 });
     let buffers = [];
 
-    // Collect the PDF chunks in buffers array
     doc.on('data', buffers.push.bind(buffers));
     doc.on('end', () => {
       const pdfBuffer = Buffer.concat(buffers);
       resolve({ pdfBuffer });
     });
 
-    // HEADER - Logo + Title
-    doc.image(path.join(__dirname, '../assets/tsoga-logo.png'), 50, 45, { width: 100 });
-    doc.fontSize(20).fillColor('#2C3E50').text(`Personalized Insurance Offer`, 160, 65);
+    // COLORS & FONTS
+    const primaryColor = '#2C3E50';
+    const accentColor = '#ffca01';
+    const textColor = '#333';
+
+    // LOGO & HEADER
+    try {
+      doc.image(path.join(__dirname, '../assets/tsoga-logo.png'), 50, 40, { width: 160 });
+    } catch (err) {
+      console.warn('Logo not found or failed to load:', err.message);
+    }
+
+    doc.moveDown(4); // Add spacing below the logo
+    doc
+      .fontSize(22)
+      .fillColor(primaryColor)
+      .text('Personalized Insurance Offer', { align: 'left' });
+
+    doc.moveDown(1);
 
     // Greeting
-    doc.moveDown();
-    doc.fontSize(14).fillColor('#000').text(`Hello ${data.firstName},`, { continued: false });
-    doc.moveDown();
-
-    // Intro
+    doc.fontSize(13).fillColor(textColor).text(`Hello ${data.firstName},`);
+    doc.moveDown(0.5);
     doc.fontSize(12).text(
       `Thank you for your interest in our ${data.insuranceSubType} insurance offering. Below is your personalized product breakdown for ${data.subProduct || ''} in ${data.location}.`
     );
-    doc.moveDown();
+    doc.moveDown(1.5);
 
-    // Section: Product Overview
-    doc.fontSize(16).fillColor('#ffca01').text('Product Overview', { underline: true });
-    doc.moveDown(0.5);
-    doc.fontSize(12).fillColor('#000').text(`Description: ${data.description || 'N/A'}`);
-    doc.text(`Who Is It For: ${data.whoIsItFor || 'N/A'}`);
-    doc.moveDown();
+    // Helper function for sections
+    const renderSection = (title, content) => {
+      doc.fontSize(14).fillColor(accentColor).text(title, { underline: true });
+      doc.moveDown(0.3);
+      doc.fontSize(12).fillColor(textColor);
+      if (Array.isArray(content)) {
+        content.forEach(item => doc.text(`• ${item}`));
+      } else {
+        doc.text(content || 'N/A');
+      }
+      doc.moveDown(1);
+    };
 
-    // Section: Cover Details
-    if (data.coverDetails && data.coverDetails.length) {
-      doc.fontSize(16).fillColor('#ffca01').text('Cover Details', { underline: true });
-      doc.moveDown(0.5);
-      data.coverDetails.forEach(item => {
-        doc.fontSize(12).fillColor('#000').text(`• ${item}`);
-      });
-      doc.moveDown();
-    }
+    // Render dynamic sections
+    renderSection('Product Overview', [
+      `Description: ${data.description || 'N/A'}`,
+      `Who Is It For: ${data.whoIsItFor || 'N/A'}`
+    ]);
 
-    // Section: Policy Highlights
-    if (data.policyHighlights && data.policyHighlights.length) {
-      doc.fontSize(16).fillColor('#ffca01').text('Policy Highlights', { underline: true });
-      doc.moveDown(0.5);
-      data.policyHighlights.forEach(item => {
-        doc.fontSize(12).fillColor('#000').text(`• ${item}`);
-      });
-      doc.moveDown();
-    }
+    if (data.coverDetails?.length) renderSection('Cover Details', data.coverDetails);
+    if (data.policyHighlights?.length) renderSection('Policy Highlights', data.policyHighlights);
+    if (data.exclusions?.length) renderSection('Exclusions', data.exclusions);
+    if (data.claimsProcess) renderSection('Claims Process', data.claimsProcess);
+    if (data.excessInfo) renderSection('Excess Info', data.excessInfo);
+    if (data.periodOfCover) renderSection('Period of Cover', data.periodOfCover);
 
-    // Section: Exclusions
-    if (data.exclusions && data.exclusions.length) {
-      doc.fontSize(16).fillColor('#ffca01').text('Exclusions', { underline: true });
-      doc.moveDown(0.5);
-      data.exclusions.forEach(item => {
-        doc.fontSize(12).fillColor('#000').text(`• ${item}`);
-      });
-      doc.moveDown();
-    }
-
-    // Section: Claims Process
-    if (data.claimsProcess) {
-      doc.fontSize(16).fillColor('#ffca01').text('Claims Process', { underline: true });
-      doc.moveDown(0.5);
-      doc.fontSize(12).fillColor('#000').text(data.claimsProcess);
-      doc.moveDown();
-    }
-
-    // Section: Excess Info
-    if (data.excessInfo) {
-      doc.fontSize(16).fillColor('#ffca01').text('Excess Info', { underline: true });
-      doc.moveDown(0.5);
-      doc.fontSize(12).fillColor('#000').text(data.excessInfo);
-      doc.moveDown();
-    }
-
-    // Section: Period of Cover
-    if (data.periodOfCover) {
-      doc.fontSize(16).fillColor('#ffca01').text('Period of Cover', { underline: true });
-      doc.moveDown(0.5);
-      doc.fontSize(12).fillColor('#000').text(data.periodOfCover);
-      doc.moveDown();
-    }
-
-    // Footer note
-    doc.moveDown();
-    doc.fontSize(12).fillColor('#333').text(
+    // Final message
+    doc.fontSize(11).fillColor('#444').text(
       'If you have any questions or would like to speak with a consultant, our team is always here to assist!',
       { align: 'center' }
     );
+    doc.moveDown(2);
 
-    // Finalize PDF and end stream
+    // FOOTER
+    doc
+      .fontSize(10)
+      .fillColor(textColor)
+      .text('Tsoga Afrika Insurance Brokers (PTY) Ltd is an authorised Financial Services Provider', {
+        align: 'center'
+      });
+    doc
+      .fontSize(10)
+      .text('FSP License Number: 49909', { align: 'center' });
+
+    doc
+      .fontSize(10)
+      .fillColor('#7b3f00')
+      .text('"...after all, Insurance is a STOKVEL™"', {
+        align: 'center',
+        oblique: true
+      });
+
+    // End PDF
     doc.end();
   });
 };
